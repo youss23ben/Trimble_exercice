@@ -1,0 +1,31 @@
+You can find in this file my summary of the following paper intiteld:
+An image is worth 16x16 words:
+Transformers for image recognition at scale
+https://arxiv.org/pdf/2010.11929.pdf
+
+--> summary:
+The paper introduces a new neural network architecture for image classification which is based on the transformer architecture. It is called ViT (Vision Transformer) and uses self attention to model the interactions between different parts of an image.
+
+The model applies global attention by dividing images into patches. They are obtained by dividing the input image into a grid of fixed-size patches. Then each patch is flattered into a vector. Each vector is then multiplied with an embedding matrix to give patch embedding.
+Along with patch embedding a class token is created, which is similar to the CLS token in Bert. Because the transformer doesn’t know the order of the input a positional encoding vector is then added to the patch embedding to include spatial information. The sequence of patch vectors is then fed into the encoder transformer, which consists of a stack of self-attention, normalization and multilayer perceptron layers. The output of the class token embedding (learnable embedding) is the result of the classification.
+
+Compared to CNN, ViT has less image specific inductive bias because only MLP (Multi layer perceptron) are local while self attention layers are global. ViT uses dimensional neighborhood structure twice, in the beginning when cutting images into patches and at fine tuning when adjusting the position embeddings for images of different resolutions.
+
+There is a hybrid architecture to ViT where the image patches are extracted from a CNN feature map as an alternative to raw image patches.
+
+There are variants of the ViT architecture which are based on those used for Bert, including Base, Large. A Huge model was also added using 32 layers and 623M parameters. The input patch size is also a variant for the model.
+
+The model ViT is trained using Adam with weight decay and a linear learning rate warmup and decay. For fine tuning SGD with momentum is used. The models are evaluated and compared to traditional CNN on various image classification benchmarks such as ImageNet, CIFAR-100, Oxford Flowers and VTAB. It performs better than Big CNN based networks such as ResNet on those benchmarks. It is also faster and more efficient in terms of computational costs.
+
+ViT is also much faster when used with bigger patch sizes, in that smaller sequence of patches. Experiments shows that ViT using patches of 16*16 is 4 times faster than with patches of size 14*14.
+
+Though CNN models outperform transformer models when pretrained with a small dataset. ViT only performs better on big datasets.
+
+
+--> why this paper what interesting to me?
+
+The transformer architecture has revolutionized NLP. Self attention has been quite successful in natural language processing and speech recognition.
+So far images were a difficult domain for transformers to operate in because self attention would be calculated for each couple of pixels and it is computationally heavy.
+There have been some ideas to overcome this issue and reduce the number of times self attention is applied, for example applying attention locally for each query pixel, or the use of transformers in combination with CNN.
+I felt this paper was interesting and important publication in the field of computer vision. It introduced a new architecture (ViT) that uses self-attention mechanisms to process image data without relying on convolutional layers.
+ViT's success challenges the common belief that convolutional layers are necessary for effective image processing and opens up new possibilities for using self-attention mechanisms in computer vision tasks. The paper also explores hybrid models that combine ViT with convolutional layers, demonstrating that the two approaches can complement each other.
