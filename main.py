@@ -13,7 +13,7 @@ from sklearn.utils import resample
 from imblearn.over_sampling import RandomOverSampler
 
 from augmentations import transform, transform_aug
-from utils import to_dataframe
+from utils import to_dataframe, save_train_curves
 from datasets import OversampledDataset
 from models import CNN, Big_CNN, VGG_model
 
@@ -92,49 +92,60 @@ def train_model(model, batch_size, lr, augment):
 
 
 def validate_model(model, batch_size, augment):
+    # switching model to evaluation mode
     model.eval()
 
+    # checking if CUDA is available
     CUDA = torch.cuda.is_available()
 
+    # initialize empty lists to store true and predicted labels
     y_true, y_pred = [], []
 
+    # load validation data
     val_loader = load_data(batch_size, augment)[1]
+    # define cross-entropy loss function
     criterion = nn.CrossEntropyLoss()
 
+    # turn off gradients for validation
     with torch.no_grad():
-
         for data, target in val_loader:
-
+            # move data and target tensors to GPU if available
             if CUDA:
                 data = data.cuda()
                 target = target.cuda()
 
             output = model(data)
+
+            # calculating the loss between predicted and true labels
             loss = criterion(output, target)
             iter_loss = loss.item()
 
+            # getting predicted labels
             _, pred = torch.max(output, dim=1)
             y_true.extend(target.cpu().numpy())
             y_pred.extend(pred.cpu().numpy())
 
+    # calculating precision, recall, and F1 score
     precision = precision_score(y_true, y_pred, average='weighted')
     recall = recall_score(y_true, y_pred, average='weighted')
     f1 = f1_score(y_true, y_pred, average='weighted')
+
     return loss, precision, recall, f1
 
 
 def training_loop(model, lr, epochs, batch_size, augment, model_name):
-    # Define your early stopping criteria
+    # defining the early stopping criteria
     patience = 5  # number of epochs to wait before stopping
     best_loss = float('inf')
     counter = 0  # counter to keep track of number of epochs since last improvement
 
+    train_losses, val_losses, val_f1_scores = [], [], []
     for epoch in range(1, epochs + 1):
         train_loss = train_model(model=model, lr=lr, batch_size=batch_size, augment=augment)
 
         val_loss, precision, recall, f1 = validate_model(model=model, batch_size=batch_size, augment=augment)
 
-        # update the best validation loss and save the model if it's improved
+        # updating the best validation loss and saving the model if it is improved
         if val_loss < best_loss:
             best_loss = val_loss
             torch.save(model.state_dict(), f'saved_models/best_model_{model_name}_augment_{augment}.pt')
@@ -142,7 +153,7 @@ def training_loop(model, lr, epochs, batch_size, augment, model_name):
         else:
             counter += 1
 
-        # stop training if the validation loss hasn't improved for 'patience' epochs
+        # stopping training if the validation loss hasn't improved for 'patience' epochs
         if counter >= patience:
             print(f"Early stopping after {epoch} epochs")
             break
@@ -150,7 +161,34 @@ def training_loop(model, lr, epochs, batch_size, augment, model_name):
         print(
             f'Epoch {epoch}: train_loss={train_loss}, val_loss={val_loss}, precision={precision:.4f}, recall={recall:.4f}, f1={f1:.4f}')
 
+        train_losses.append(train_loss)
+        val_losses.append(val_loss)
+        val_f1_scores.append(f1)
+
+    save_train_curves(train_losses, val_losses, val_f1_scores, model_name, augment)
+
 
 if __name__ == "__main__":
-    bigger_cnn = Big_CNN()
-    training_loop(model=bigger_cnn, batch_size=32, lr=0.001, epochs=23, augment=True, model_name="big_cnn")
+    #training and getting results for 3 implemented models either with the use of data augmentation or not
+    #6 models and trianed in total
+
+    epochs = 30
+    lr = 0.001
+    for model_name in ["cnn", "big_cnn", "vgg"]:
+        for augment in [True, False]:
+            if model_name == "cnn":
+                model = CNN()
+            elif model_name == "big_cnn":
+                model = Big_CNN()
+            else:
+                model = VGG_model()
+            if augment:
+                batch_size = 32
+            else:
+                batch_size = 16
+
+            training_loop(model=model, batch_size=batch_size, lr=lr, epochs=epochs, augment=augment,
+                          model_name=model_name)
+
+    #bigger_cnn = Big_CNN()
+    #training_loop(model=bigger_cnn, batch_size=32, lr=0.001, epochs=23, augment=True, model_name="big_cnn")

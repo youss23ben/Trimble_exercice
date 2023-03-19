@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, datasets, models
 
 
-# Define the CNN architecture
+# defining the CNN architecture
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -32,7 +32,7 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.maxpool(self.relu(self.bn1(self.conv1(x))))
         x = self.maxpool(self.relu(self.bn2(self.conv2(x))))
-        # flatten the 32 features maps from max pool and feed it to fc2
+        # flattenning the 32 features maps from max pool and feed it to fc2
         x = x.view(-1, 32 * 28 * 28)
         x = self.relu(self.fc1(x))
         x = self.dropout(x)
@@ -65,7 +65,7 @@ class Big_CNN(nn.Module):
         self.bn3 = nn.BatchNorm2d(64)
         # ouput_size (after maxppoling): 28/2 = 14
 
-        # flatten the 14 feature maps
+        # flattenning the 64 feature maps
         self.fc1 = nn.Linear(64 * 14 * 14, 256)
         self.dropout = nn.Dropout(0.5)
         self.fc2 = nn.Linear(256, 2)
@@ -84,18 +84,17 @@ class Big_CNN(nn.Module):
 
 # trying transfer learning with VGG18
 def VGG_model():
-    # Load the pre-trained ResNet18 model
+    # loading the pre-trained ResNet18 model
     model = models.resnet18(pretrained=True)
 
-    # Freeze the convolutional layers
+    # freezing the convolutional layers
     for param in model.parameters():
         param.requires_grad = False
 
-    # Replace the final fully connected layer
+    # replacing the final fully connected layer
     num_features = model.fc.in_features
     model.fc = nn.Linear(num_features, 2)
 
-    # Move the model to the device
     CUDA = torch.cuda.is_available()
     if CUDA:
         model = model.cuda()
