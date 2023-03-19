@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from torch.utils.data import Dataset
+
 import cv2
 from PIL import Image
 

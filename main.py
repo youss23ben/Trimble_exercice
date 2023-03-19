@@ -5,6 +5,8 @@ from torchvision import transforms, datasets, models
 from torch.utils.data import random_split
 import torchvision
 
+import pandas as pd
+
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.utils import resample
 
@@ -13,6 +15,7 @@ from imblearn.over_sampling import RandomOverSampler
 from augmentations import transform, transform_aug
 from utils import to_dataframe
 from datasets import OversampledDataset
+from models import CNN, Big_CNN, VGG_model
 
 
 def oversample_data():
@@ -32,9 +35,9 @@ def oversample_data():
 def load_data(batch_size, augment):
     df_oversampled = oversample_data()
     if augment:
-        dataset = ImageDataset(df_oversampled, transform=transform_aug)
+        dataset = OversampledDataset(df_oversampled, transform=transform_aug)
     else:
-        dataset = ImageDataset(df_oversampled, transform=transform)
+        dataset = OversampledDataset(df_oversampled, transform=transform)
 
     # Split the data into training and validation sets
     train_size = int(0.8 * len(dataset))
@@ -134,7 +137,7 @@ def training_loop(model, lr, epochs, batch_size, augment, model_name):
         # update the best validation loss and save the model if it's improved
         if val_loss < best_loss:
             best_loss = val_loss
-            torch.save(model.state_dict(), f'best_model_{model_name}_augment_{augment}.pt')
+            torch.save(model.state_dict(), f'saved_models/best_model_{model_name}_augment_{augment}.pt')
             counter = 0
         else:
             counter += 1
@@ -149,4 +152,5 @@ def training_loop(model, lr, epochs, batch_size, augment, model_name):
 
 
 if __name__ == "__main__":
+    bigger_cnn = Big_CNN()
     training_loop(model=bigger_cnn, batch_size=32, lr=0.001, epochs=23, augment=True, model_name="big_cnn")

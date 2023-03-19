@@ -1,10 +1,10 @@
-import pands as pd
+import pandas as pd
 
 from datasets import ImageDataset
 
 
 def to_dataframe():
-    dataset = ImageDataset(data_dir)
+    dataset = ImageDataset('dataset')
     df = pd.DataFrame({
         "image_path": dataset.image_paths,
         "label": dataset.labels
