@@ -1,0 +1,41 @@
+Going throught the data composed of two classes "road" and field" I noticed that the classes are imbalanced.
+There are 108 samples of road class while only 45 samples of field class. This will impact the training so I chose to
+oversample the minority class (field). Also I noticed that two samples named 3 and 5 in the fields folder are in fact
+images of roads. This could have been an error in labeling so I moved them to the road folder instead in order no to
+impact the training. Overall we have a small dataset so data augmentation technique could be applied. I run several
+tests on albumentations to see which trandofmrations I should apply. Results of this preminarly anlysis can bve found in
+'graphs_and_results/' and the code in analysis.py.
+
+I chose a convolution neural network because they are designed to extract relevant features from images and they can
+learn from small dataset. I started with building a CNN with two convolutional layers at first, a small number of layer
+because the dataset is small.
+The input channel is set to 3 because the images are RGB, so 3 color channels.
+For the first conv layer I chose 16 output channels wich could be adjusted but I figured to start with a small number of
+channels in the first layer and go deeper on the next layers. And I chose a kernel size of 3 because it is small enough
+to capture local features but still allows the model to learn the high leevr features in the next layers.
+For the second conv layer I doubled the output channels and a bigger kernel size of 5 to capture more global features.
+
+I feared if I chose a bigger architecture the model will overfit on the training data. But within the first
+experimentations I could see that some of the field images were classified as road mainly because in many of the road
+image we have the sky representing about half the image and it was the case for those poorly classified images of
+fields. The model needed another bigger layer and a larger filter size. I designed then a bigger CNN with
+3 convolutional layers.
+The third layer doubles the number of outptu channel and a filter of size 7 which is large enough to extract complex
+features.
+
+Because we have a small dataset I set the batch size to a small value. Initialy to 8 but within a few test I found out
+that 16 was a better value. Although with the use of augmentation I chose a batch size of 32 to better utilize the
+augmented data. I chose a learning rate of 0.001 as a starting point. I founf it better than 0.01 but didn't experiment
+further. Idealy I would have set a range of learning rates to try but as I was traning 6 models it would have taking
+more time. I chose 30 epochs which is large enough for the small datset we have. Although I applied early stopping with
+a patience of 5. Generally the models trained without data augmentation stop their training befoe reaching 30 epochs.
+
+I chose Adam as an optimizer because it has shown well performances for training a deep neural network. It has the
+ability to efficiently update the network paramters and adapt the learning rate during training.
+As it is a task of binary classification I chose the binary cross entropy as a loss.
+
+Also I was curious to try transfer learning and figured it could give good results if I apply data augmentation.
+I chose Vgg 18 and froze the last layer.
+
+
+
