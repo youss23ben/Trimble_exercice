@@ -187,8 +187,8 @@ if __name__ == "__main__":
             else:
                 batch_size = 16
 
-            training_loop(model=model, batch_size=batch_size, lr=lr, epochs=epochs, augment=augment,
-                          model_name=model_name)
+            #training_loop(model=model, batch_size=batch_size, lr=lr, epochs=epochs, augment=augment,
+            #              model_name=model_name)
 
-    #bigger_cnn = Big_CNN()
-    #training_loop(model=bigger_cnn, batch_size=32, lr=0.001, epochs=23, augment=True, model_name="big_cnn")
+    bigger_cnn = Big_CNN()
+    training_loop(model=bigger_cnn, batch_size=32, lr=0.001, epochs=30, augment=True, model_name="big_cnn")

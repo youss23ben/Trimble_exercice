@@ -2,6 +2,6 @@ Model,test_accuracy
 CNN_augment_False,90%
 CNN_augment_True,90%
 Big_CNN_augment_False,100%
-Big_CNN_augment_True,70%
+Big_CNN_augment_True,90%
 VGG_augment_False,70%
 VGG_augment_True,90%
