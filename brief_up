@@ -59,6 +59,11 @@ train, it didn't improve the performances of either cnn or big_cnn. We can see f
 VGG with augmentation doesn't overfit while without augmentation it doesn't learn anything more after the 13th epoch.
 While I was expecting VGG with augmented data to perform the best from all models I found out that the second CNN
 model that I called Big_CNN without data augmentation leads to the best test accuracy (10 correct predictions out of 10).
+The VGG with augmentation gave 9 correct predcition over 10. The one that was mistakenly predicted was image 6. In this
+image we see both a road and a field and I wasn't sure how to label it. I chose 'road' but I belive it could be 'field'
+as well. If so then the VGG is crect 10 out of 10.
+Both VGG with augmentation and big_cnn without augmentation are performant for this task. With this dataset I belive
+the big_cnn is good enough but with a greater dataset VGG wold be more performent.
 
 
 
